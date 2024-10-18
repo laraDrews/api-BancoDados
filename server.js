@@ -3,48 +3,40 @@ import { fastify } from 'fastify'
 import cors from '@fastify/cors'
 import { DatabasePostgres } from './database-postgres.js'
 
-const server = fastify();
-const databasePostgres = new DatabasePostgres;
+const servidor = fastify();
+const bancoDeDadosPostgres = new DatabasePostgres();
 
-// CORS
-server.register(cors, {
+servidor.register(cors, {
     origin: '*',
     methods: ['GET', 'POST', 'PUT', 'DELETE']
 })
 
-// ENDPOINTS (CRUD):
-
-// CREATE
-server.post('/users', async (request, reply) => {
-    const body = request.body;
-    await databasePostgres.createUser(body);
+servidor.post('/carros', async (request, reply) => {
+    const corpo = request.body;
+    await bancoDeDadosPostgres.criarCarro(corpo);
     return reply.status(201).send();
 })
 
-// READE
-server.get('/users', async () => {
-    const users = await databasePostgres.listUsers();
-    return users;
+servidor.get('/carros', async () => {
+    const carros = await bancoDeDadosPostgres.listarCarros();
+    return carros;
 });
 
-// UPDATE
-server.put('/users/:id', async (request, reply) => {
-    const userID = request.params.id;
-    const body = request.body;
-    await databasePostgres.updateUser(userID, body);
+servidor.put('/carros/:id', async (request, reply) => {
+    const idCarro = request.params.id;
+    const corpo = request.body;
+    await bancoDeDadosPostgres.atualizarCarro(idCarro, corpo);
 
     return reply.status(204).send();
 })
 
-// DELETE
-server.delete('/users/:id', async (request, reply) => {
-    const userID = request.params.id;
-    await databasePostgres.deleteUser(userID);
+servidor.delete('/carros/:id', async (request, reply) => {
+    const idCarro = request.params.id;
+    await bancoDeDadosPostgres.deletarCarro(idCarro);
 
     return reply.status(204).send();
 })
 
-
-server.listen({
+servidor.listen({
     port: 3333
 });
